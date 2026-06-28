@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a1f2e">
+<title>Calm Signal Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Blue-gray dark palette — darker bg for card contrast */
+  --bg-start:    #080c14;
+  --bg-mid:      #0c1220;
+  --bg-end:      #060a12;
+  --bg2:         #0f1625;
+  --bg3:         #151e30;
+
+  /* Warm white text */
+  --warm:        #edeaf5;
+  --warm-dim:    #9a96b0;
+
+  /* Muted teal accent */
+  --teal:        #6db8b0;
+  --teal-light:  #96d0ca;
+  --teal-dim:    #3e7a74;
+  --teal-glow:   rgba(109,184,176,0.18);
+
+  /* Soft lavender highlight */
+  --lav:         #b8b4d8;
+  --lav-light:   #d4d2ea;
+
+  --text:        #edeaf5;
+  --text-dim:    #555e7a;
+  --border:      rgba(109,184,176,0.10);
+  --border-mid:  rgba(109,184,176,0.22);
+
+  --serif:       'Cormorant Garamond', Georgia, serif;
+  --sans:        'Inter', system-ui, sans-serif;
+  --radius:      18px;
+
+  /* Gradients */
+  --grad-bg:         linear-gradient(160deg, #080c14 0%, #0c1828 50%, #060a12 100%);
+  --grad-gate:       radial-gradient(ellipse at 50% 30%, #0f1a2c 0%, #090e1e 45%, #050810 100%);
+  --grad-card-back:  linear-gradient(145deg, #1e2d48 0%, #16213a 40%, #1a2540 100%);
+  --grad-card-front: linear-gradient(160deg, #1c2840 0%, #16203a 45%, #1e2640 100%);
+  --grad-btn:        linear-gradient(135deg, #5aada6 0%, #3d8e88 50%, #2e7270 100%);
+  --grad-btn-lav:    linear-gradient(135deg, #8a87c4 0%, #6a67a4 50%, #555290 100%);
+  --grad-action:     linear-gradient(135deg, rgba(109,184,176,0.14) 0%, rgba(61,142,136,0.10) 100%);
+  --grad-header:     linear-gradient(180deg, #0e1525 0%, #080c14 100%);
+  --grad-nav:        linear-gradient(0deg, #06090f 0%, #0a0f1a 100%);
+  --grad-browse:     linear-gradient(145deg, #111a2a 0%, #0e1525 100%);
+}
+
+html, body {
+  height: 100%; width: 100%;
+  background: var(--grad-bg);
+  color: var(--text);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ─── GATE ──────────────────────────────────────────────────── */
+#gate {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--grad-gate);
+  z-index: 100;
+  padding: 32px;
+}
+.gate-eyebrow {
+  font-family: var(--sans);
+  font-size: 10px; letter-spacing: 0.26em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--teal) 0%, var(--teal-light) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 22px;
+}
+.gate-title {
+  font-family: var(--serif);
+  font-size: clamp(30px, 7vw, 48px);
+  font-weight: 300;
+  background: linear-gradient(160deg, var(--warm) 0%, var(--lav-light) 50%, var(--warm-dim) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.gate-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--warm-dim);
+  text-align: center;
+  margin-bottom: 50px;
+}
+.gate-rule {
+  width: 44px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--teal-dim), transparent);
+  margin: 0 auto 42px;
+}
+.gate-label {
+  font-size: 10px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--warm-dim);
+  margin-bottom: 12px;
+}
+#code-input {
+  background: linear-gradient(135deg, #1e2638 0%, #1a2030 100%);
+  border: 1px solid var(--border-mid);
+  color: var(--warm);
+  font-family: var(--sans);
+  font-size: 16px;
+  letter-spacing: 0.22em;
+  text-align: center;
+  width: 230px;
+  padding: 14px 20px;
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+#code-input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--teal-glow);
+}
+#code-input::placeholder { color: var(--text-dim); letter-spacing: 0.12em; }
+#code-error {
+  font-size: 12px; color: #c07a7a;
+  margin-top: 10px; height: 16px;
+  transition: opacity 0.3s; opacity: 0;
+}
+#code-error.show { opacity: 1; }
+#unlock-btn {
+  margin-top: 26px;
+  background: var(--grad-btn);
+  border: none;
+  color: #0a1a18;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 14px 42px;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: opacity 0.22s, transform 0.18s;
+  box-shadow: 0 4px 20px rgba(61,142,136,0.32);
+}
+#unlock-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+#unlock-btn:active { transform: translateY(0); }
+
+/* ─── APP SHELL ─────────────────────────────────────────────── */
+#app { display: none; position: fixed; inset: 0; flex-direction: column; }
+#app.visible { display: flex; }
+
+/* ─── HEADER ────────────────────────────────────────────────── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px 13px;
+  background: var(--grad-header);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.header-title {
+  font-family: var(--serif);
+  font-size: 17px; font-weight: 400;
+  background: linear-gradient(135deg, var(--warm) 0%, var(--lav-light) 55%, var(--warm-dim) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.02em;
+}
+.header-sub {
+  font-size: 9px; letter-spacing: 0.20em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--teal) 0%, var(--teal-light) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-top: 3px;
+}
+.icon-btn {
+  background: linear-gradient(135deg, #1e2638 0%, #1a2030 100%);
+  border: 1px solid var(--border-mid);
+  border-radius: 50%; width: 36px; height: 36px;
+  color: var(--warm-dim); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.icon-btn:hover { border-color: var(--teal); color: var(--teal); box-shadow: 0 0 10px var(--teal-glow); }
+.icon-btn.active { border-color: var(--teal); color: var(--teal); box-shadow: 0 0 10px var(--teal-glow); }
+
+/* ─── VIEWS ─────────────────────────────────────────────────── */
+#view-draw, #view-browse, #view-fav { display: none; flex: 1; overflow: hidden; }
+#view-draw.active { display: flex; flex-direction: column; align-items: center; }
+#view-browse.active, #view-fav.active { display: block; overflow-y: auto; }
+
+/* ─── DRAW VIEW ─────────────────────────────────────────────── */
+#draw-area {
+  flex: 1; display: flex;
+  align-items: center; justify-content: center;
+  padding: 16px 24px 8px;
+  width: 100%;
+  min-height: 0; /* important: allows flex child to shrink */
+}
+.card-wrap {
+  /* Width: max 88vw but also constrained by available height */
+  width: min(300px, 80vw);
+  /* Use container queries via calc to limit by height too */
+  cursor: pointer;
+}
+.card {
+  position: relative;
+  width: 100%;
+  /* Aspect ratio 2.75:4.75 = 1:1.727 — use aspect-ratio instead of padding-bottom hack */
+  aspect-ratio: 2.75 / 4.75;
+  /* Hard cap: never taller than available space */
+  max-height: calc(100dvh - 240px);
+  max-width: 100%;
+}
+.card-face {
+  position: absolute; inset: 0;
+  border-radius: 20px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  overflow: hidden;
+  transition: opacity 0.35s ease;
+  width: 100%; height: 100%;
+}
+.card-back  { opacity: 1; z-index: 2; }
+.card-front { opacity: 0; z-index: 1; }
+.card.flipped .card-back  { opacity: 0; z-index: 1; }
+.card.flipped .card-front { opacity: 1; z-index: 2; }
+
+/* BACK */
+.card-back {
+  background: var(--grad-card-back);
+  border: 1px solid rgba(109,184,176,0.35);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(109,184,176,0.08), inset 0 1px 0 rgba(180,180,220,0.08);
+}
+.card-back-inner { text-align: center; padding: 36px; }
+.card-back-glyph {
+  font-size: 48px;
+  background: linear-gradient(160deg, var(--teal-light) 0%, var(--teal) 50%, var(--teal-dim) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1; margin-bottom: 22px; opacity: 0.75;
+}
+.card-back-deco {
+  width: 36px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--teal-dim), transparent);
+  margin: 0 auto 18px;
+}
+.card-back-label {
+  font-family: var(--serif); font-size: 17px; font-weight: 300;
+  background: linear-gradient(135deg, var(--warm) 0%, var(--warm-dim) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.04em; line-height: 1.5;
+}
+.card-back-sub {
+  font-family: var(--serif); font-style: italic;
+  font-size: 12px; color: var(--teal-dim);
+  margin-top: 8px; letter-spacing: 0.06em;
+}
+
+/* FRONT */
+.card-front {
+  background: var(--grad-card-front);
+  border: 1px solid rgba(180,180,220,0.22);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(109,184,176,0.08), inset 0 1px 0 rgba(180,180,220,0.08);
+  justify-content: space-between;  /* top header | middle oracle | bottom action */
+  padding: 22px 22px 20px;
+  overflow: hidden;  /* no scroll — layout fills card */
+}
+
+/* Top section: number + title + divider */
+.card-top {
+  flex-shrink: 0;
+}
+
+/* Middle section: oracle label + text — grows to fill space */
+.card-middle {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* center oracle vertically in remaining space */
+  padding: 10px 0;
+}
+
+/* Bottom section: action box — pinned to bottom */
+.card-bottom {
+  flex-shrink: 0;
+}
+.card-front::-webkit-scrollbar { width: 3px; }
+.card-front::-webkit-scrollbar-thumb { background: var(--teal-dim); border-radius: 2px; }
+
+.card-num {
+  font-size: 9px; letter-spacing: 0.24em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--teal) 0%, var(--teal-light) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+.card-title {
+  font-family: var(--serif);
+  font-size: clamp(21px, 5.2vw, 27px);
+  font-weight: 400;
+  background: linear-gradient(135deg, var(--warm) 0%, var(--lav-light) 55%, var(--warm-dim) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2; margin-bottom: 16px;
+}
+.card-divider {
+  width: 26px; height: 1px;
+  background: linear-gradient(90deg, var(--teal-dim), transparent);
+  margin-bottom: 16px; opacity: 0.6;
+}
+.card-oracle-label {
+  font-size: 8px; letter-spacing: 0.20em;
+  text-transform: uppercase; color: var(--teal); margin-bottom: 8px;
+}
+.card-oracle {
+  font-family: var(--serif);
+  font-size: clamp(13px, 3.3vw, 15.5px);
+  font-style: italic; color: var(--text);
+  line-height: 1.78; margin-bottom: 0;
+}
+.card-action-box {
+  background: var(--grad-action);
+  border: 1px solid rgba(109,184,176,0.20);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.card-action-label {
+  font-size: 8px; letter-spacing: 0.20em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--teal) 0%, var(--teal-light) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 7px;
+}
+.card-action { font-size: 12.5px; color: var(--text); line-height: 1.65; }
+
+/* ─── DRAW CONTROLS ─────────────────────────────────────────── */
+.draw-controls {
+  padding: 0 24px 16px;
+  width: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px; flex-shrink: 0;
+}
+.draw-controls-row {
+  display: flex; gap: 12px;
+  width: 100%; max-width: 340px;
+}
+.btn-draw {
+  flex: 1;
+  background: var(--grad-btn);
+  border: none;
+  color: #071210;
+  font-family: var(--sans); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 14px 10px; border-radius: 40px; cursor: pointer;
+  transition: opacity 0.22s, transform 0.18s;
+  box-shadow: 0 4px 18px rgba(61,142,136,0.30);
+}
+.btn-draw:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-draw:active { transform: translateY(0); }
+
+.btn-shuffle {
+  background: linear-gradient(135deg, #1e2638 0%, #1a2030 100%);
+  border: 1px solid rgba(109,184,176,0.28);
+  color: var(--teal-light);
+  font-family: var(--sans); font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 14px 18px; border-radius: 40px; cursor: pointer;
+  transition: border-color 0.22s, color 0.22s, box-shadow 0.22s;
+  white-space: nowrap;
+}
+.btn-shuffle:hover {
+  border-color: var(--teal);
+  box-shadow: 0 0 14px var(--teal-glow);
+}
+
+.card-counter {
+  font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em;
+}
+.draw-hint {
+  font-size: 9px; color: var(--teal-dim);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  min-height: 12px;
+}
+
+/* ─── BROWSE / FAV GRID ─────────────────────────────────────── */
+.browse-section-header {
+  padding: 20px 18px 6px;
+  font-size: 9px; letter-spacing: 0.22em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--teal) 0%, var(--teal-light) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.browse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 10px; padding: 10px 16px;
+}
+.browse-card {
+  background: var(--grad-browse);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px 14px;
+  cursor: pointer; position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.browse-card:hover {
+  border-color: var(--teal-dim);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.3);
+}
+.browse-num {
+  font-size: 8px; letter-spacing: 0.22em;
+  background: linear-gradient(90deg, var(--teal) 0%, var(--teal-light) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+}
+.browse-title {
+  font-family: var(--serif); font-size: 15px;
+  background: linear-gradient(135deg, var(--warm) 0%, var(--lav-light) 70%, var(--warm-dim) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.3;
+}
+.fav-dot {
+  position: absolute; top: 10px; right: 10px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal) 0%, var(--teal-light) 100%);
+  display: none;
+}
+.browse-card.is-fav .fav-dot { display: block; }
+.fav-empty {
+  text-align: center; padding: 80px 32px;
+  font-family: var(--serif); font-style: italic;
+  font-size: 18px; color: var(--text-dim);
+}
+
+/* ─── BOTTOM NAV ─────────────────────────────────────────────── */
+nav {
+  display: flex;
+  background: var(--grad-nav);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.nav-btn {
+  flex: 1; background: none; border: none;
+  color: var(--text-dim);
+  font-family: var(--sans); font-size: 9px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 12px 4px 10px; cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 5px;
+  transition: color 0.2s;
+}
+.nav-btn.active {
+  background: linear-gradient(90deg, var(--teal) 0%, var(--teal-light) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nav-icon { font-size: 18px; }
+.nav-btn.active .nav-icon {
+  filter: drop-shadow(0 0 4px rgba(109,184,176,0.5));
+}
+
+/* ─── MODAL ─────────────────────────────────────────────────── */
+#modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.72); z-index: 150;
+  align-items: flex-end; justify-content: center;
+}
+#modal-overlay.open { display: flex; }
+#modal-sheet {
+  background: linear-gradient(160deg, #1c2438 0%, #171c2c 50%, #1a1e2e 100%);
+  border: 1px solid var(--border-mid);
+  border-top: 1px solid rgba(109,184,176,0.18);
+  border-radius: 24px 24px 0 0;
+  width: 100%; max-width: 480px;
+  max-height: 85vh; overflow-y: auto;
+  padding: 28px 24px 44px;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+#modal-sheet::-webkit-scrollbar { width: 3px; }
+#modal-sheet::-webkit-scrollbar-thumb { background: var(--teal-dim); border-radius: 2px; }
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.modal-close {
+  position: absolute; top: 18px; right: 20px;
+  background: none; border: none;
+  color: var(--text-dim); font-size: 20px;
+  cursor: pointer; padding: 4px;
+  transition: color 0.2s;
+}
+.modal-close:hover { color: var(--warm); }
+
+/* ─── TOAST ──────────────────────────────────────────────────── */
+#toast {
+  position: fixed; top: 80px; left: 50%;
+  transform: translateX(-50%) translateY(-12px);
+  background: linear-gradient(135deg, #1e2638 0%, #1a2030 100%);
+  border: 1px solid var(--border-mid);
+  color: var(--warm); font-size: 12px;
+  letter-spacing: 0.06em; padding: 10px 22px;
+  border-radius: 40px; pointer-events: none;
+  opacity: 0; transition: opacity 0.3s, transform 0.3s;
+  z-index: 200; white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ─── SHAKE ───────────────────────────────────────────────────── */
+@keyframes shake {
+  0%,100%{ transform:translateX(0); }
+  15%{ transform:translateX(-8px); }
+  30%{ transform:translateX(8px); }
+  45%{ transform:translateX(-6px); }
+  60%{ transform:translateX(6px); }
+  75%{ transform:translateX(-3px); }
+  90%{ transform:translateX(3px); }
+}
+.shake { animation: shake 0.45s ease-in-out; }
+
+@keyframes cardShake {
+  0%   { transform: translateX(0) rotate(0deg); }
+  15%  { transform: translateX(-8px) rotate(-2deg); }
+  30%  { transform: translateX(8px) rotate(2deg); }
+  45%  { transform: translateX(-6px) rotate(-1.5deg); }
+  60%  { transform: translateX(6px) rotate(1.5deg); }
+  75%  { transform: translateX(-3px) rotate(-0.8deg); }
+  90%  { transform: translateX(3px) rotate(0.5deg); }
+  100% { transform: translateX(0) rotate(0deg); }
+}
+#card-wrap.shaking { animation: cardShake 0.55s ease-in-out; }
+</style>
+</head>
+<body>
+
+<!-- ─── GATE ──────────────────────────────────────────────────── -->
+<div id="gate">
+  <div class="gate-eyebrow">PsychicSoulStar</div>
+  <div class="gate-title">Calm Signal<br>Cards</div>
+  <div class="gate-sub">Nervous System · Task Start · Calm Action</div>
+  <div class="gate-rule"></div>
+  <div class="gate-label">Access Code</div>
+  <input id="code-input" type="text" placeholder="Enter your code" autocomplete="off" autocorrect="off" spellcheck="false">
+  <div id="code-error">Incorrect code. Please try again.</div>
+  <button id="unlock-btn">Unlock Deck</button>
+</div>
+
+<!-- ─── APP ───────────────────────────────────────────────────── -->
+<div id="app">
+  <header>
+    <div>
+      <div class="header-title">Calm Signal Cards</div>
+      <div class="header-sub">52 Cards · Nervous System Support</div>
+    </div>
+    <button class="icon-btn" id="fav-toggle-btn" title="Save card">♡</button>
+  </header>
+
+  <!-- DRAW -->
+  <div id="view-draw" class="active">
+    <div id="draw-area">
+      <div class="card-wrap" id="card-wrap">
+        <div class="card" id="main-card">
+          <div class="card-face card-back">
+            <div class="card-back-inner">
+              <div class="card-back-glyph">✦</div>
+              <div class="card-back-deco"></div>
+              <div class="card-back-label">Calm Signal<br>Cards</div>
+              <div class="card-back-sub">Draw a card to begin</div>
+            </div>
+          </div>
+          <div class="card-face card-front" id="card-front-content"></div>
+        </div>
+      </div>
+    </div>
+    <div class="draw-controls">
+      <span class="card-counter" id="card-counter">— / 52</span>
+      <span class="draw-hint" id="draw-hint">Draw a card to begin</span>
+      <div class="draw-controls-row">
+        <button class="btn-draw" id="draw-btn">Draw a Card</button>
+        <button class="btn-shuffle" id="shuffle-btn">✦ Shuffle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BROWSE -->
+  <div id="view-browse">
+    <div id="browse-container"></div>
+  </div>
+
+  <!-- SAVED -->
+  <div id="view-fav">
+    <div id="fav-container"></div>
+  </div>
+
+  <nav>
+    <button class="nav-btn active" data-view="draw" onclick="switchView('draw')">
+      <span class="nav-icon">◇</span>Draw
+    </button>
+    <button class="nav-btn" data-view="browse" onclick="switchView('browse')">
+      <span class="nav-icon">≡</span>Browse
+    </button>
+    <button class="nav-btn" data-view="fav" onclick="switchView('fav')">
+      <span class="nav-icon">♡</span>Saved
+    </button>
+  </nav>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal-sheet">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────
+const SECTIONS = [
+  { title:"Section 1 — Begin & Settle",       range:[1,13]  },
+  { title:"Section 2 — Move & Reset",         range:[14,26] },
+  { title:"Section 3 — Protect & Simplify",   range:[27,39] },
+  { title:"Section 4 — Release & Continue",   range:[40,52] },
+];
+
+const CARDS = [
+  {id:1,  title:"Start Small",         oracle:"The smallest move is still a real move. You do not need to begin perfectly. You only need to begin at the smallest possible point.",                                                              action:"Identify the tiniest version of the next task. Take only that one step."},
+  {id:2,  title:"One Next Step",       oracle:"When everything feels unclear, clarity comes from naming just one next action. Not a plan. Not a list. One visible step.",                                                                        action:"Write down the next action in a single sentence. Make it concrete and doable."},
+  {id:3,  title:"Lower the Bar",       oracle:"Pressure to perform makes starting harder. Simplify the task before you judge yourself for not beginning.",                                                                                       action:"Remove one requirement from the task. Make the acceptable version smaller."},
+  {id:4,  title:"Reset the Space",     oracle:"Your environment sends signals to your nervous system. A calmer space can create a calmer starting point.",                                                                                       action:"Clear one surface near you. Keep only what you need for the next task."},
+  {id:5,  title:"Body First",          oracle:"Physical tension holds the body in a ready-for-threat state. Release the body before asking the mind to focus.",                                                                                  action:"Roll your shoulders back, unclench your jaw, place both feet flat on the floor. Breathe out slowly."},
+  {id:6,  title:"Five-Minute Win",     oracle:"Momentum does not require motivation. A short, timed effort can restart a stuck system.",                                                                                                         action:"Set a timer for 5 minutes. Work only until it ends. Stop when it rings."},
+  {id:7,  title:"Close One Loop",      oracle:"Unfinished items pull on your attention like open tabs. Closing even one creates real mental relief.",                                                                                            action:"Finish one small open item right now. Send the message, make the note, complete the step."},
+  {id:8,  title:"Gentle Pace",         oracle:"Speeding up when your system is already stressed tends to increase errors and overwhelm. A steadier rhythm is more reliable.",                                                                    action:"Slow down by 10%. Take one breath between each action. Let the pace settle."},
+  {id:9,  title:"Check the Signal",    oracle:"Sometimes resistance is not laziness. It is a signal from your nervous system that something needs attention first.",                                                                             action:"Ask: am I blocked by overload, fear, confusion, or physical tension? Name it before continuing."},
+  {id:10, title:"One Container",       oracle:"Tasks without a boundary tend to expand. A simple container — a time limit, a word count, a physical space — makes them more manageable.",                                                       action:"Give the task a limit. Work for 15 minutes only, or until one page is filled."},
+  {id:11, title:"Move First",          oracle:"Movement changes the chemistry of the body. A short physical reset can make the next task more accessible.",                                                                                      action:"Stand up. Walk for 2 minutes. Shake out your hands and return."},
+  {id:12, title:"Safe Enough",         oracle:"You do not need perfect conditions to begin. You need enough safety to take one step. That is all that is required right now.",                                                                   action:"Ask yourself: is this moment safe enough to try one small step? If yes, begin."},
+  {id:13, title:"Reduce the Noise",    oracle:"Too much competing input makes every task feel louder. Reducing input creates room for the nervous system to settle.",                                                                            action:"Close one unnecessary tab, silence one notification, or reduce the screen brightness."},
+  {id:14, title:"Right-Sized Task",    oracle:"A task that is too large for your current capacity is not a failure. It is a task that needs to be resized.",                                                                                    action:"Break the task into three smaller pieces. Choose only the first piece to work on now."},
+  {id:15, title:"Finish Something Tiny",oracle:"Completion creates a signal of relief. Even a tiny finish can shift how your system feels about continuing.",                                                                                   action:"Identify one thing that can be fully completed in the next 5 minutes. Do it now."},
+  {id:16, title:"Exhale Longer",       oracle:"The exhale activates the parasympathetic nervous system. Breathing out longer than you breathe in is one of the fastest ways to settle an activated state.",                                     action:"Breathe in for 4 counts. Breathe out for 6 counts. Repeat three times before continuing."},
+  {id:17, title:"Make It Visible",     oracle:"The brain cannot act easily on what it cannot see. Get the task out of your head and into the physical world.",                                                                                  action:"Write the next step on paper or on a sticky note. Place it where you can see it."},
+  {id:18, title:"Exit the Spiral",     oracle:"Overthinking rarely produces the best option. It produces exhaustion. Choose a workable option and stop reviewing.",                                                                             action:"Pick the most reasonable option available. Commit to it for the next 10 minutes."},
+  {id:19, title:"Reduce Friction",     oracle:"If beginning feels hard, the path may have too many barriers. Prepare the environment before you try to start.",                                                                                 action:"Remove one barrier before you begin. Open the file, clear the desk, put the tool in your hand."},
+  {id:20, title:"Friendly Structure",  oracle:"Structure can feel like control or like support, depending on how it is used. A gentle framework reduces decisions without adding pressure.",                                                    action:"Choose one simple structure: a timer, a checklist of three items, or a clear stopping point."},
+  {id:21, title:"Return to the Body",  oracle:"When the mind feels scattered, the body is always present. Grounding through physical sensation can slow the cognitive spin.",                                                                   action:"Notice five things you can feel right now: the chair beneath you, the air on your skin, the weight of your hands."},
+  {id:22, title:"Pause the Push",      oracle:"Forcing often increases resistance. Pausing and reassessing tends to produce better results than pushing harder.",                                                                               action:"Stop what you are doing. Sit quietly for 90 seconds. Then ask: what would make the next step easier?"},
+  {id:23, title:"Tiny Finish Line",    oracle:"A finish line creates direction. Without one, effort tends to feel endless. Define a small and reachable endpoint.",                                                                             action:"Name a finish line for the next 20 minutes. Write it down and stop when you reach it."},
+  {id:24, title:"Good Enough Counts",  oracle:"Perfection is rarely what is needed. A workable version completed is almost always more useful than an ideal version delayed.",                                                                  action:"Ask: what is the simplest version of this that would be good enough? Do that version."},
+  {id:25, title:"One Thought at a Time",oracle:"Your attention becomes more effective when it has a single target. Multitasking rarely saves time and often costs more energy than it produces.",                                               action:"Choose one thought, one task, one tab. Everything else closes or waits."},
+  {id:26, title:"Reset with Water",    oracle:"A sensory shift can interrupt a mental loop. Something as simple as drinking water, washing your hands, or stepping outside can create a small but real reset.",                                 action:"Get a glass of water. Drink it slowly. Notice the sensation. Return to the task after."},
+  {id:27, title:"Name the Resistance", oracle:"What you cannot name tends to grow. Identifying the exact block takes away some of its power.",                                                                                                  action:"Complete this sentence in writing: \"The real reason I am not starting is _______.\""},
+  {id:28, title:"Choose the Easiest Entry",oracle:"When resistance is high, begin where it is lowest. The easiest entry point is still a beginning.",                                                                                          action:"Find the part of the task that feels least difficult. Start only there."},
+  {id:29, title:"Protect Your Attention",oracle:"Attention is a limited resource. What you give it to matters. Guard your focus the way you would guard any resource you value.",                                                              action:"Identify one thing that is taking attention without returning value. Remove it for the next 20 minutes."},
+  {id:30, title:"Move the Needle",     oracle:"Progress does not require a breakthrough. A small and genuine movement forward is still movement. Let it count.",                                                                                action:"Take the smallest action that moves this forward. One sentence. One reply. One step."},
+  {id:31, title:"Stop Rehearsing",     oracle:"Thinking about the task is not the same as doing the task. At some point, beginning is more useful than preparing to begin.",                                                                   action:"Set a 2-minute limit on planning. When it ends, switch to doing — even imperfectly."},
+  {id:32, title:"Release the Extra",   oracle:"Unnecessary pressure does not improve performance. It increases the cost of effort. Let some of the pressure go before continuing.",                                                             action:"Identify one expectation you can drop right now. Give yourself permission to release it."},
+  {id:33, title:"Safe Pause",          oracle:"A pause is not a failure. It is a regulated break that allows the system to reset before continuing. Use it intentionally.",                                                                     action:"Take a 3-minute intentional pause. Do nothing. Then return with one clear next move."},
+  {id:34, title:"Ask for a Body Double",oracle:"Working alongside another person — even silently — can reduce the friction of starting and maintaining focus.",                                                                                 action:"Ask someone to sit nearby while you work, or open a body double session online."},
+  {id:35, title:"Short Loop",          oracle:"Long work sessions are harder to enter when resistance is high. A short loop — a defined sprint — is easier to start and easier to finish.",                                                    action:"Set a 10-minute work sprint. Focus only on one output. Rest when it ends."},
+  {id:36, title:"Unfreeze the Hands",  oracle:"When the mind is stuck, the hands can lead. A physical action — writing, arranging, drawing — can help movement restart.",                                                                      action:"Pick up a pen. Write anything. Doodle. Move something on your desk. Let the hands go first."},
+  {id:37, title:"Separate Feelings from Facts",oracle:"Feelings about a task are real, but they are not always accurate. Separating what is true from what is felt can reduce the size of the obstacle.",                                     action:"Write one fact about the task and one feeling about it. Notice that they are different."},
+  {id:38, title:"Lower the Stakes",    oracle:"High stakes create high activation. Reducing the perceived importance of the next step can make it easier to begin.",                                                                            action:"Remind yourself: this is a draft, not a final. This is a step, not a summit."},
+  {id:39, title:"One Visible Proof",   oracle:"Evidence of movement is motivating. One completed action creates evidence that you are capable of continuing.",                                                                                  action:"Complete one visible action. Put it somewhere you can see it. Let it be proof."},
+  {id:40, title:"Slow the Scan",       oracle:"When the nervous system is activated, attention tends to scan quickly for threat. Slowing the scan grounds attention in the present moment.",                                                    action:"Look around the room slowly. Name three things you see. Let your eyes settle on one of them."},
+  {id:41, title:"Restore Capacity",    oracle:"Pushing without recovery reduces the quality of future effort. Recovery is part of the work, not a reward for completing it.",                                                                  action:"Take 5 minutes to rest fully — no screen, no task. Then return."},
+  {id:42, title:"Don't Make It Personal",oracle:"Difficulty with a task is often situational, not a reflection of your worth or ability. Try to stay neutral and keep moving.",                                                                action:"Replace \"I am failing\" with \"This task is hard right now.\" Notice the difference."},
+  {id:43, title:"Find the Next Step",  oracle:"When the full path feels overwhelming, reduce the view. You only need the next checkpoint, not the whole route.",                                                                               action:"Identify only the next checkpoint — not the goal, just the next step. Go only there."},
+  {id:44, title:"Calm the Input",      oracle:"The nervous system responds to input volume. Lowering what comes in creates more capacity for what is already present.",                                                                        action:"Lower one source of sensory input: reduce screen brightness, mute sound, or close a door."},
+  {id:45, title:"Keep It Moving",      oracle:"Gentle forward motion is easier to sustain than stopping and restarting. Let the pace be slow if needed, but keep it going.",                                                                  action:"Continue the task at a slower pace. Movement matters more than speed right now."},
+  {id:46, title:"Clear the First Layer",oracle:"The first layer of resistance is often the heaviest. Once it is removed, the task tends to feel more accessible.",                                                                            action:"Remove the first barrier only. Open the document, write the subject line, make the first mark."},
+  {id:47, title:"Use the Timer",       oracle:"A timer removes the question of when to stop. Let the structure hold the boundary so you do not have to.",                                                                                      action:"Set a timer for any amount of time. Work only until it ends. Stop when it rings."},
+  {id:48, title:"Follow the Easiest Cue",oracle:"Your body often knows what it needs before the mind names it. A simple physical cue — thirst, tension, fatigue — is worth following.",                                                       action:"Notice one physical cue right now. Respond to it before returning to the task."},
+  {id:49, title:"Enough for Today",    oracle:"A day does not need to be exceptional to count. Choosing a place to stop is a skill, not a surrender.",                                                                                         action:"Decide now what done looks like for today. Name it. Stop there when you reach it."},
+  {id:50, title:"Small Repair",        oracle:"Not everything broken needs a complete overhaul. A small repair — one correction, one clean-up, one reset — can shift the entire experience.",                                                  action:"Fix one small thing. One message, one file, one object out of place. Just one."},
+  {id:51, title:"Re-Enter Gently",     oracle:"After a break, a long pause, or a hard moment, re-entering with softness tends to be more effective than forcing your way back.",                                                              action:"Return to the task slowly. Read the last line. Write one new sentence. Go gently."},
+  {id:52, title:"You Can Begin",       oracle:"Permission to start does not come from being ready. It comes from deciding that enough is already in place. You can begin from here.",                                                           action:"Decide that this moment is enough to begin. Take one step right now. That is all."},
+];
+
+// ─── VERIFY ───────────────────────────────────────────────────
+if (CARDS.length !== 52) console.error('CARD COUNT ERROR: ' + CARDS.length);
+
+function getSectionLabel(id) {
+  for (const s of SECTIONS) { if (id >= s.range[0] && id <= s.range[1]) return s.title; }
+  return "";
+}
+
+// ─── STATE ────────────────────────────────────────────────────
+const ACCESS_CODE = "CALM2026";
+let currentCard = null;
+let isFlipped = false;
+let favorites = [];
+try { favorites = JSON.parse(localStorage.getItem('csc_favs') || '[]'); } catch(e) {}
+
+// ─── GATE ─────────────────────────────────────────────────────
+const codeInput = document.getElementById('code-input');
+const codeError = document.getElementById('code-error');
+document.getElementById('unlock-btn').addEventListener('click', tryUnlock);
+codeInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+function tryUnlock() {
+  const val = codeInput.value.trim().toUpperCase();
+  if (val === ACCESS_CODE) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    buildBrowse(); buildFav();
+  } else {
+    codeError.classList.add('show');
+    void codeInput.offsetWidth;
+    codeInput.classList.remove('shake');
+    void codeInput.offsetWidth;
+    codeInput.classList.add('shake');
+    codeInput.addEventListener('animationend', () => codeInput.classList.remove('shake'), {once:true});
+  }
+}
+
+// ─── RENDER CARD FRONT ────────────────────────────────────────
+function renderCardFront(card) {
+  document.getElementById('card-front-content').innerHTML = `
+    <div class="card-top">
+      <div class="card-num">Card ${String(card.id).padStart(2,'0')} of 52</div>
+      <div class="card-title">${card.title}</div>
+      <div class="card-divider"></div>
+    </div>
+    <div class="card-middle">
+      <div class="card-oracle-label">Message</div>
+      <div class="card-oracle">${card.oracle}</div>
+    </div>
+    <div class="card-bottom">
+      <div class="card-action-box">
+        <div class="card-action-label">Action Step</div>
+        <div class="card-action">${card.action}</div>
+      </div>
+    </div>
+  `;
+  updateFavBtn(favorites.includes(card.id));
+}
+
+// ─── DRAW ─────────────────────────────────────────────────────
+const mainCard = document.getElementById('main-card');
+
+function drawCard() {
+  mainCard.classList.remove('flipped');
+  isFlipped = false;
+  let idx;
+  do { idx = Math.floor(Math.random() * CARDS.length); }
+  while (CARDS[idx] === currentCard && CARDS.length > 1);
+  currentCard = CARDS[idx];
+  renderCardFront(currentCard);
+  document.getElementById('draw-hint').textContent = 'Tap card to reveal';
+  // Reset counter — number only shows after flip
+  document.getElementById('card-counter').textContent = `— / 52`;
+}
+
+mainCard.addEventListener('click', () => {
+  if (!currentCard) return;
+  mainCard.classList.toggle('flipped');
+  isFlipped = !isFlipped;
+  // Show card number only after flip (reveal)
+  if (isFlipped) {
+    document.getElementById('card-counter').textContent = `Card ${String(currentCard.id).padStart(2,'0')} / 52`;
+  } else {
+    document.getElementById('card-counter').textContent = `— / 52`;
+  }
+  document.getElementById('draw-hint').textContent = isFlipped ? 'Draw again for a new card' : 'Tap card to reveal';
+});
+
+document.getElementById('draw-btn').addEventListener('click', drawCard);
+
+document.getElementById('shuffle-btn').addEventListener('click', () => {
+  const wrap = document.getElementById('card-wrap');
+  const card = document.getElementById('main-card');
+  wrap.classList.remove('shaking');
+  void wrap.offsetWidth;
+  wrap.classList.add('shaking');
+  let pool = currentCard ? CARDS.filter(c => c.id !== currentCard.id) : CARDS;
+  const next = pool[Math.floor(Math.random() * pool.length)];
+  currentCard = next;
+  setTimeout(() => {
+    wrap.classList.remove('shaking');
+    card.classList.remove('flipped');
+    isFlipped = false;
+    renderCardFront(next);
+    document.getElementById('draw-hint').textContent = 'Tap card to reveal';
+    // Reset counter — number hidden until flip
+    document.getElementById('card-counter').textContent = `— / 52`;
+    showToast('New card ready');
+  }, 560);
+});
+
+// ─── FAVORITES ────────────────────────────────────────────────
+function updateFavBtn(isFav) {
+  const btn = document.getElementById('fav-toggle-btn');
+  btn.textContent = isFav ? '♥' : '♡';
+  btn.classList.toggle('active', isFav);
+}
+
+document.getElementById('fav-toggle-btn').addEventListener('click', () => {
+  if (!currentCard) return;
+  const idx = favorites.indexOf(currentCard.id);
+  if (idx > -1) { favorites.splice(idx,1); showToast('Removed from Saved'); }
+  else { favorites.push(currentCard.id); showToast('Saved ♥'); }
+  try { localStorage.setItem('csc_favs', JSON.stringify(favorites)); } catch(e) {}
+  updateFavBtn(favorites.includes(currentCard.id));
+  buildFav(); buildBrowse();
+});
+
+// ─── BROWSE ───────────────────────────────────────────────────
+function buildBrowse() {
+  const container = document.getElementById('browse-container');
+  let html = '';
+  let lastSection = '';
+  CARDS.forEach(card => {
+    const sec = getSectionLabel(card.id);
+    if (sec !== lastSection) {
+      if (lastSection) html += '</div>';
+      html += `<div class="browse-section-header">${sec}</div><div class="browse-grid">`;
+      lastSection = sec;
+    }
+    const isFav = favorites.includes(card.id);
+    html += `<div class="browse-card${isFav?' is-fav':''}" onclick="openModal(${card.id})">
+      <div class="fav-dot"></div>
+      <div class="browse-num">${String(card.id).padStart(2,'0')}</div>
+      <div class="browse-title">${card.title}</div>
+    </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function buildFav() {
+  const container = document.getElementById('fav-container');
+  if (!favorites.length) {
+    container.innerHTML = '<div class="fav-empty">No saved cards yet.<br>Draw a card and tap ♡ to save it.</div>';
+    return;
+  }
+  const favCards = CARDS.filter(c => favorites.includes(c.id));
+  let html = '<div class="browse-grid" style="padding:16px">';
+  favCards.forEach(card => {
+    html += `<div class="browse-card is-fav" onclick="openModal(${card.id})">
+      <div class="fav-dot"></div>
+      <div class="browse-num">${String(card.id).padStart(2,'0')}</div>
+      <div class="browse-title">${card.title}</div>
+    </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ─── MODAL ────────────────────────────────────────────────────
+function openModal(id) {
+  const card = CARDS.find(c => c.id === id);
+  if (!card) return;
+  const isFav = favorites.includes(card.id);
+  document.getElementById('modal-content').innerHTML = `
+    <div>
+      <div class="card-num" style="margin-bottom:12px">Card ${String(card.id).padStart(2,'0')} of 52</div>
+      <div class="card-title" style="font-size:22px;margin-bottom:16px">${card.title}</div>
+      <div class="card-divider"></div>
+      <div class="card-oracle-label">Message</div>
+      <div class="card-oracle">${card.oracle}</div>
+      <div class="card-action-box">
+        <div class="card-action-label">Action Step</div>
+        <div class="card-action">${card.action}</div>
+      </div>
+      <button id="modal-fav-btn" onclick="toggleFavFromModal(${card.id})"
+        style="margin-top:16px;width:100%;background:transparent;border:1px solid ${isFav?'var(--teal)':'var(--border-mid)'};color:${isFav?'var(--teal)':'var(--warm-dim)'};font-family:var(--sans);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;padding:12px;border-radius:40px;cursor:pointer;transition:border-color 0.2s,color 0.2s">
+        ${isFav?'♥ Saved':'♡ Save Card'}
+      </button>
+    </div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function toggleFavFromModal(id) {
+  const idx = favorites.indexOf(id);
+  if (idx > -1) { favorites.splice(idx,1); showToast('Removed from Saved'); }
+  else { favorites.push(id); showToast('Saved ♥'); }
+  try { localStorage.setItem('csc_favs', JSON.stringify(favorites)); } catch(e) {}
+  const isFav = favorites.includes(id);
+  const btn = document.getElementById('modal-fav-btn');
+  if (btn) {
+    btn.textContent = isFav ? '♥ Saved' : '♡ Save Card';
+    btn.style.borderColor = isFav ? 'var(--teal)' : 'var(--border-mid)';
+    btn.style.color = isFav ? 'var(--teal)' : 'var(--warm-dim)';
+  }
+  buildFav(); buildBrowse();
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay'))
+    document.getElementById('modal-overlay').classList.remove('open');
+}
+
+// ─── NAV ──────────────────────────────────────────────────────
+function switchView(name) {
+  ['draw','browse','fav'].forEach(v => {
+    document.getElementById('view-'+v).classList.toggle('active', v===name);
+    document.querySelector(`[data-view="${v}"]`).classList.toggle('active', v===name);
+  });
+}
+
+// ─── TOAST ────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>
